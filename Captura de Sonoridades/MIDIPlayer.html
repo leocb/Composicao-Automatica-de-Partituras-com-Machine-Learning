@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<title>MIDI.js - Sequencing in Javascript.</title>
+
+	<!-- shim -->
+	<script src="inc/shim/Base64.js" type="text/javascript"></script>
+	<script src="inc/shim/Base64binary.js" type="text/javascript"></script>
+	<script src="inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+	<script src="inc/shim/WebMIDIAPI.js" type="text/javascript"></script>
+
+	<!-- jasmid package -->
+	<script src="inc/jasmid/stream.js"></script>
+	<script src="inc/jasmid/midifile.js"></script>
+	<script src="inc/jasmid/replayer.js"></script>
+
+	<!-- midi.js package -->
+	<script src="js/midi/audioDetect.js" type="text/javascript"></script>
+	<script src="js/midi/gm.js" type="text/javascript"></script>
+	<script src="js/midi/loader.js" type="text/javascript"></script>
+	<script src="js/midi/plugin.audiotag.js" type="text/javascript"></script>
+	<script src="js/midi/plugin.webaudio.js" type="text/javascript"></script>
+	<script src="js/midi/plugin.webmidi.js" type="text/javascript"></script>
+	<script src="js/midi/player.js" type="text/javascript"></script>
+	<script src="js/midi/synesthesia.js" type="text/javascript"></script>
+
+	<!-- utils -->
+	<script src="js/util/dom_request_xhr.js" type="text/javascript"></script>
+	<script src="js/util/dom_request_script.js" type="text/javascript"></script>
+
+	<!-- p5 -->
+	<script src="js/p5/p5.js"></script>
+	<script src="js/p5/p5.dom.js"></script>
+	<script src="js/p5/p5.sound.js"></script>
+	<script src="js/sketch.js"></script>
+	<script src="js/FileSaver.js"></script>
+
+</head>
+
+<body>
+	Selecione um arquivo e clique botão abaixo:
+	<br/>
+	<input id="file" type="file" onchange="geraSongBase64()" accept=".mid" />
+	<br/>
+	<br/>
+	<button id="button" disabled>Tocar
+
+		<script type="text/javascript">
+
+			var player;
+			var song;
+
+			function geraSongBase64() {
+				var files = document.getElementById('file').files;
+				if (files.length > 0) {
+					getBase64(files[0]);
+				}
+			}
+
+			function getBase64(file) {
+				var reader = new FileReader();
+				reader.readAsDataURL(file);
+				reader.onload = function () {
+					song = reader.result;
+					document.getElementById("button").disabled = false;
+				};
+			}
+
+			document.getElementById('button').addEventListener('click', function () {
+				loadSong(song);
+			});
+
+			function loadSong(song) {
+				MIDI.loadPlugin({
+					soundfontUrl: "./soundfont/",
+					onsuccess: function () {
+						player = MIDI.Player;
+						player.loadFile(this.song, startMusic);
+
+						MIDIPlayerPercentage(player);
+					}
+				});
+			}
+
+			var MIDIPlayerPercentage = function (player) {
+				player.setAnimation(function (data, element) {
+
+					var now = Math.round(data.now * 10000) / 10000;
+					var end = Math.round(data.end * 10000) / 10000;
+
+					if (now > 0 && !gravando && now < end)
+						startRecord();
+
+					if (now >= end && gravando) {
+						stopRecord();
+					}
+				});
+			};
+
+			function startMusic() {
+				player.start();
+			}
+
+		</script>
+</body>
+
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebSockets Client</title>
+</head>
+
+<body>
+    <div id="send">
+        <input type="number" id="BPM" min="60" max="180" value="120" />
+        <button onclick="UpdateBPM(document.getElementById('BPM').value);"> Update BPM </button>
+
+        <input type="text" id="hostip" size="30" value="ws://localhost:9091/ws" />
+        <button onclick="configurar();"> Conectar </button>
+        <br> Send Custom to Websocket:
+        <input type="text" id="data" size="100" /><br>
+        <Button onclick="enviar(txt.value);">Send</Button>
+    </div>
+    <div id="output"></div>
+
+    <script src="js/lib/p5.js"></script>
+    <script src="js/lib/p5.dom.js"></script>
+    <script src="js/lib/p5.sound.js"></script>
+    <script src="js/sketch.js"></script>
+</body>
+
+</html>
